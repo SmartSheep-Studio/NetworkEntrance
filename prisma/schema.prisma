@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model Permissions {
+    id          String   @id @map("_id")
+    description String
+    is_default  Boolean  @default(false)
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+}
+
+model Contacts {
+    id         String       @id @default(uuid()) @map("_id")
+    uid        String?
+    mode       ContactModes
+    contact    String
+    created_at DateTime     @default(now())
+    updated_at DateTime     @updatedAt
+    // Relations
+    user       Users?       @relation(fields: [uid], references: [id])
+}
+
+enum ContactModes {
+    EMAIL
+    PHONE
+}
+
+model Users {
+    id             String     @id @default(uuid()) @map("_id")
+    channels_id    String[]
+    username       String     @unique
+    nickname       String
+    password       String
+    permissions_id String[] // List of permissions ID
+    verifications  Contacts[]
+    is_active      Boolean    @default(false)
+    is_suspended   Boolean    @default(false)
+    created_at     DateTime   @default(now())
+    updated_at     DateTime   @updatedAt
+    // Relations
+    channels       Channels[] @relation(fields: [channels_id], references: [id])
+}
+
+model Channels {
+    id           String         @id @default(uuid()) @map("_id")
+    members_id   String[]
+    name         String         @unique
+    nickname     String
+    is_active    Boolean        @default(false)
+    is_suspended Boolean        @default(false)
+    created_at   DateTime       @default(now())
+    updated_at   DateTime       @updatedAt
+    projects     Projects[]
+    // Relations
+    users        Users[]        @relation(fields: [members_id], references: [id])
+    Applications Applications[]
+}
+
+model Projects {
+    id           String         @id @default(uuid()) @map("_id")
+    developer_id String
+    created_at   DateTime       @default(now())
+    updated_at   DateTime       @updatedAt
+    // Relations
+    developer    Channels       @relation(fields: [developer_id], references: [id])
+    Applications Applications[]
+}
+
+model Applications {
+    id           String   @id @default(uuid()) @map("_id")
+    developer_id String
+    projects_id  String
+    name         String
+    description  String
+    secret       String
+    scope        Json
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
+    //
+    developer    Channels @relation(fields: [developer_id], references: [id])
+    project      Projects @relation(fields: [projects_id], references: [id])
+}
