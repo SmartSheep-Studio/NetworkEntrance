@@ -1,14 +1,14 @@
 import { Controller, Get } from "@nestjs/common";
 
-@Controller("/")
+@Controller()
 export class StatusController {
   @Get()
   GetStatus(): object {
     return {
-      Code: "SUCCESS",
-      Data: {
-        Maintenance: false,
-        Version: "1.02.1",
+      code: "SUCCESS",
+      data: {
+        maintenance: false,
+        version: "1.02.1",
       },
     };
   }
