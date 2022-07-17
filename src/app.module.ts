@@ -11,12 +11,12 @@ import { TransformInterceptor } from "./interceptors/transform.interceptor";
   controllers: [],
   providers: [
     {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformInterceptor,
-    },
-    {
       provide: APP_FILTER,
       useClass: ErrorFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

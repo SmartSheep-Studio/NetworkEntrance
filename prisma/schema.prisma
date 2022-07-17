@@ -19,6 +19,23 @@ model Permissions {
     updated_at  DateTime @updatedAt
 }
 
+enum ContactModes {
+    EMAIL
+    PHONE
+}
+
+model Contacts {
+    id          String       @id @default(uuid()) @map("_id")
+    uid         String?
+    contact     String
+    mode        ContactModes
+    is_verified Boolean      @default(false)
+    created_at  DateTime     @default(now())
+    updated_at  DateTime     @updatedAt
+    // Relations
+    users       Users?       @relation(fields: [uid], references: [id])
+}
+
 model Users {
     id            String     @id @default(uuid()) @map("_id")
     channels_id   String[]
@@ -26,7 +43,7 @@ model Users {
     nickname      String
     password      String
     permissions   String[] // List of permissions ID
-    verifications Json // List of Contracts(contract, mode[phone, number])
+    verifications Contacts[]
     is_active     Boolean    @default(false)
     is_suspended  Boolean    @default(false)
     created_at    DateTime   @default(now())
@@ -37,7 +54,7 @@ model Users {
 
 model Channels {
     id           String         @id @default(uuid()) @map("_id")
-    members_id   String[]      
+    members_id   String[]
     name         String         @unique
     nickname     String
     is_active    Boolean        @default(false)
@@ -52,7 +69,7 @@ model Channels {
 
 model Projects {
     id           String         @id @default(uuid()) @map("_id")
-    developer_id String        
+    developer_id String
     created_at   DateTime       @default(now())
     updated_at   DateTime       @updatedAt
     // Relations
@@ -62,8 +79,8 @@ model Projects {
 
 model Applications {
     id           String   @id @default(uuid()) @map("_id")
-    developer_id String  
-    projects_id  String  
+    developer_id String
+    projects_id  String
     name         String
     description  String
     secret       String
