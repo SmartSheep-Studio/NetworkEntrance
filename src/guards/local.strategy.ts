@@ -14,6 +14,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!account && (await this.accounts.validate(id, password))) {
       throw new UnauthorizedException();
     }
-    return account;
+    return { account };
   }
 }
